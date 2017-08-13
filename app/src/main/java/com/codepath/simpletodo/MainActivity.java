@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void launchEditItemView(int pos) {
         Intent i = new Intent(MainActivity.this, EditItemActivity.class);
+        i.putExtra("item_pos", pos);
+        i.putExtra("item_body", items.get(pos).toString());
         startActivity(i);
     }
 
