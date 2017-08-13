@@ -1,5 +1,6 @@
 package com.codepath.simpletodo;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -39,6 +40,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void launchEditItemView(int pos) {
+        Intent i = new Intent(MainActivity.this, EditItemActivity.class);
+        startActivity(i);
+    }
+
     private void setupListViewListener() {
         lvItems.setOnItemLongClickListener(
                 new AdapterView.OnItemLongClickListener() {
@@ -49,6 +55,16 @@ public class MainActivity extends AppCompatActivity {
                         itemsAdapter.notifyDataSetChanged();
                         writeItems();
                         return true;
+                    }
+                }
+        );
+
+        lvItems.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapter,
+                                                   View item, int pos, long id) {
+                        launchEditItemView(pos);
                     }
                 }
         );
