@@ -38,5 +38,6 @@
         android:layout_alignStart="@+id/etEditItem"
         android:layout_below="@+id/etEditItem"
         android:layout_marginTop="31dp"
-        android:text="Save" />
+        android:text="Save"
+        android:onClick="onSubmit" />
 </RelativeLayout>
