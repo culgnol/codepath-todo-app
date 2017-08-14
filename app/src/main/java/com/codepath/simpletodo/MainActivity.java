@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
             // Extract value from result extras
             String item_body = data.getExtras().getString("item_body");
             int pos = data.getExtras().getInt("item_pos");
-            Toast.makeText(this, item_body, Toast.LENGTH_SHORT).show();
+            updateItem(item_body, pos);
         }
     }
 
@@ -84,6 +84,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+    }
+
+    private void updateItem(String item, int pos) {
+        items.set(pos, item);
+        itemsAdapter.notifyDataSetChanged();
+        writeItems();
     }
 
     public void onAddItem(View v)
