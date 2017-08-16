@@ -1,6 +1,7 @@
 package com.codepath.simpletodo;
 
 import android.content.Intent;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -44,10 +45,13 @@ public class MainActivity extends AppCompatActivity {
 
     private final int REQUEST_CODE = 20;
     public void launchEditItemView(int pos) {
-        Intent i = new Intent(MainActivity.this, EditItemActivity.class);
-        i.putExtra("item_pos", pos);
-        i.putExtra("item_body", items.get(pos).toString());
-        startActivityForResult(i, REQUEST_CODE);
+//        Intent i = new Intent(MainActivity.this, EditItemActivity.class);
+//        i.putExtra("item_pos", pos);
+//        i.putExtra("item_body", items.get(pos).toString());
+//        startActivityForResult(i, REQUEST_CODE);
+        FragmentManager fm = getSupportFragmentManager();
+        EditItemDialogFrament editItemDialogFrament = EditItemDialogFrament.newInstance(items.get(pos).toString());
+        editItemDialogFrament.show(fm, "fragment_edit_item");
     }
 
     @Override
