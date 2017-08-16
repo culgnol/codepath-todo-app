@@ -38,6 +38,12 @@ public class MainActivity extends AppCompatActivity {
         itemsAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, items);
         lvItems.setAdapter(itemsAdapter);
+
+        if(!FileUtils.getFile(getFilesDir() + "/todo.txt").exists()) {
+            items.add("Long-click to delete");
+            items.add("Tap to edit");
+        }
+
         setupListViewListener();
 
     }
