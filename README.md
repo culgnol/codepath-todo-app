@@ -10,9 +10,9 @@ Time spent: **4** hours spent in total
 
 The following **required** functionality is completed:
 
-* [ ] User can **successfully add and remove items** from the todo list
-* [ ] User can **tap a todo item in the list and bring up an edit screen for the todo item** and then have any changes to the text reflected in the todo list.
-* [ ] User can **persist todo items** and retrieve them properly on app restart
+* [x] User can **successfully add and remove items** from the todo list
+* [x] User can **tap a todo item in the list and bring up an edit screen for the todo item** and then have any changes to the text reflected in the todo list.
+* [x] User can **persist todo items** and retrieve them properly on app restart
 
 The following **optional** features are implemented:
 
@@ -31,9 +31,10 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
-GIF created with [LiceCap](http://www.cockos.com/licecap/).
+![Video Walkthrough](img/tutorial.gif)
+
+GIF created with [Animated Gif Capture](https://chrome.google.com/webstore/detail/animated-gif-capture/aecmckhhfknljgicfkpbinfkpnijehcm?utm_source=chrome-ntp-icon).
 
 ## Project Analysis
 
@@ -41,15 +42,17 @@ As part of your pre-work submission, please reflect on the app and answer the fo
 
 **Question 1:** "What are your reactions to the Android app development platform so far? Compare and contrast Android's approach to layouts and user interfaces in past platforms you've used."
 
-**Answer:** [Enter your answer here in a paragraph or two].
+**Answer:** The tooling in Android Studio has come along pretty good. I remember dipping my toes in when all this was done using the Eclipse IDE and managing everything separately. Comparing it to Visual Studio and creating GUI applications in Windows Form/WPF, I would say they are pretty much on par with each other. Transitioning between the two was not as foreign I thought it would be.
 
 **Question 2:** "Take a moment to reflect on the `ArrayAdapter` used in your pre-work. How would you describe an adapter in this context and what is its function in Android? Why do you think the adapter is important? Explain the purpose of the `convertView` in the `getView` method of the `ArrayAdapter`."
 
-**Answer:** [Enter your answer here in a paragraph or two].
+**Answer:** Described in my own words, I would say the  `ArrayAdapter` is the bridge to bind the objects in code to the UI in Android. Once data in the bound objects are updated, the adapter is used to send a message to the associated UI component to refresh the display.
+
+The `convertView` in the `getView` method of the `ArrayAdapter` is mainly used to pass along the old view to reuse, say if a user were to select a parent combobox selection that would affect other default settings on the child selections.
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+...
 
 ## License
 
