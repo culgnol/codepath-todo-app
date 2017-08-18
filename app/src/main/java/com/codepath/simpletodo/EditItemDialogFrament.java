@@ -40,20 +40,7 @@ public class EditItemDialogFrament extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_edit_item, container);
-
-//        Button button = (Button) view.findViewById(R.id.btnSave);
-//        button.setOnClickListener(new View.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(View v)
-//            {
-//
-//                dismiss();
-//            }
-//        });
-
-        return view;
+        return inflater.inflate(R.layout.fragment_edit_item, container);
     }
 
     @Override

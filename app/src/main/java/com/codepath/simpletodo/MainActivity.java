@@ -1,26 +1,19 @@
 package com.codepath.simpletodo;
 
-import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import static android.R.attr.name;
-import static com.codepath.simpletodo.R.id.lvItems;
 
 public class MainActivity extends AppCompatActivity implements EditItemDialogFrament.EditNameDialogListener {
     ArrayList<String> items;
@@ -49,26 +42,10 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
 
     }
 
-    private final int REQUEST_CODE = 20;
     public void launchEditItemView(int pos) {
-//        Intent i = new Intent(MainActivity.this, EditItemActivity.class);
-//        i.putExtra("item_pos", pos);
-//        i.putExtra("item_body", items.get(pos).toString());
-//        startActivityForResult(i, REQUEST_CODE);
         FragmentManager fm = getSupportFragmentManager();
         EditItemDialogFrament editItemDialogFrament = EditItemDialogFrament.newInstance(items.get(pos).toString(), pos);
         editItemDialogFrament.show(fm, "fragment_edit_item");
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // REQUEST_CODE is defined above
-        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
-            // Extract value from result extras
-            String item_body = data.getExtras().getString("item_body");
-            int pos = data.getExtras().getInt("item_pos");
-            updateItem(item_body, pos);
-        }
     }
 
     private void setupListViewListener() {
