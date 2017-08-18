@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import static android.R.attr.name;
 import static com.codepath.simpletodo.R.id.lvItems;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EditItemDialogFrament.EditNameDialogListener {
     ArrayList<String> items;
     ArrayAdapter<String> itemsAdapter;
     ListView lvItems;
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 //        i.putExtra("item_body", items.get(pos).toString());
 //        startActivityForResult(i, REQUEST_CODE);
         FragmentManager fm = getSupportFragmentManager();
-        EditItemDialogFrament editItemDialogFrament = EditItemDialogFrament.newInstance(items.get(pos).toString());
+        EditItemDialogFrament editItemDialogFrament = EditItemDialogFrament.newInstance(items.get(pos).toString(), pos);
         editItemDialogFrament.show(fm, "fragment_edit_item");
     }
 
@@ -94,6 +94,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+    }
+
+    @Override
+    public void onFinishEditDialog(String inputText, int position) {
+        updateItem(inputText, position);
     }
 
     private void updateItem(String item, int pos) {
