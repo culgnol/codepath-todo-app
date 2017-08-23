@@ -9,16 +9,27 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.raizlabs.android.dbflow.sql.language.SQLite;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+
+import static android.R.attr.order;
+import static android.R.attr.text;
+import static com.raizlabs.android.dbflow.sql.language.property.PropertyFactory.from;
 
 public class MainActivity extends AppCompatActivity implements EditItemDialogFrament.EditNameDialogListener {
     ArrayList<String> items;
     ArrayAdapter<String> itemsAdapter;
     ListView lvItems;
+    TodoModel todoModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +44,8 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
                 android.R.layout.simple_list_item_1, items);
         lvItems.setAdapter(itemsAdapter);
 
-        if(!FileUtils.getFile(getFilesDir() + "/todo.txt").exists()) {
-            items.add("Long-click to delete");
-            items.add("Tap to edit");
-        }
+        //Create model
+        todoModel = new TodoModel();
 
         setupListViewListener();
 
@@ -54,9 +63,9 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
                     @Override
                     public boolean onItemLongClick(AdapterView<?> adapter,
                                                    View item, int pos, long id) {
+                        updateDb(items.get(pos).toString(), pos, 2);
                         items.remove(pos);
                         itemsAdapter.notifyDataSetChanged();
-                        writeItems();
                         return true;
                     }
                 }
@@ -81,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
     private void updateItem(String item, int pos) {
         items.set(pos, item);
         itemsAdapter.notifyDataSetChanged();
-        writeItems();
+        updateDb(item, pos, 1);
     }
 
     public void onAddItem(View v)
@@ -90,25 +99,59 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
         String itemText = etNewItem.getText().toString();
         itemsAdapter.add(itemText);
         etNewItem.setText("");
-        writeItems();
+
+        int indexOfLastItem = items.size()-1;
+        writeDb(items.get(indexOfLastItem).toString(), indexOfLastItem);
     }
 
     private void readItems() {
-        File filesDir = getFilesDir();
-        File todoFile = new File(filesDir, "todo.txt");
         try {
-            items = new ArrayList<String>(FileUtils.readLines(todoFile));
-        } catch (IOException e) {
+            List<TodoModel> todoList = SQLite.select()
+                    .from(TodoModel.class)
+                    .where()
+                    .orderBy(TodoModel_Table.createdOn, true).queryList();
+
+            for (TodoModel item: todoList) {
+                items.add(item.textBody);
+            }
+        } catch (Exception e) {
             items = new ArrayList<String>();
         }
     }
 
-    private void writeItems() {
-        File fileDir = getFilesDir();
-        File todoFile = new File(fileDir, "todo.txt");
+    private void writeDb(String textBody, int listPos) {
+        long timestamp;
         try {
-            FileUtils.writeLines(todoFile, items);
-        } catch (IOException e) {
+            timestamp = System.currentTimeMillis() / 1000;
+            SQLite.insert(TodoModel.class)
+                    .columns(TodoModel_Table.textBody, TodoModel_Table.listPos, TodoModel_Table.createdOn)
+                    .values(textBody, listPos, timestamp)
+                    .execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateDb(String textBody, int listPos, int status) {
+        try {
+            TodoModel todo = SQLite.select()
+                    .from(TodoModel.class)
+                    .where(TodoModel_Table.listPos.eq(listPos))
+                    .querySingle();
+
+            switch (status)
+            {
+                case 2:
+                    todo.delete();
+                    break;
+                case 1:
+                default:
+                    todo.setTextBody(textBody);
+                    todo.save();
+                    break;
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
