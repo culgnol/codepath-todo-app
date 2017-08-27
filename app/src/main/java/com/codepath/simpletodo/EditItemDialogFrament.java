@@ -7,8 +7,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.NumberPicker;
+import android.widget.Spinner;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.codepath.simpletodo.R.id.lvItems;
+import static com.codepath.simpletodo.R.id.spinner;
 
 /**
  * Created by culgnol on 8/13/17.
@@ -19,8 +29,11 @@ public class EditItemDialogFrament extends DialogFragment {
     private Button mButtonSave;
     private int itemPosition;
 
+    private NumberPicker numberPicker;
+    private ArrayAdapter<String> spinAdapter;
+
     public interface EditNameDialogListener {
-        void onFinishEditDialog(String inputText, int position);
+        void onFinishEditDialog(String inputText, int position, int remindDays);
     }
 
 
@@ -28,11 +41,12 @@ public class EditItemDialogFrament extends DialogFragment {
 
     }
 
-    public static EditItemDialogFrament newInstance(String item_body, int item_pos) {
+    public static EditItemDialogFrament newInstance(String item_body, int item_pos, int days) {
         EditItemDialogFrament frag = new EditItemDialogFrament();
         Bundle args = new Bundle();
         args.putString("item_body", item_body);
         args.putInt("item_pos", item_pos);
+        args.putInt("item_days", days);
         frag.setArguments(args);
         return frag;
     }
@@ -63,10 +77,20 @@ public class EditItemDialogFrament extends DialogFragment {
             public void onClick(View v)
             {
                 EditNameDialogListener listener = (EditNameDialogListener) getActivity();
-                listener.onFinishEditDialog(mEditText.getText().toString(), itemPosition);
+                listener.onFinishEditDialog(mEditText.getText().toString(), itemPosition, numberPicker.getValue());
                 dismiss();
             }
         });
+
+        numberPicker = (NumberPicker) view.findViewById(R.id.numberPicker);
+        numberPicker.setMaxValue(7);
+        numberPicker.setMinValue(0);
+        numberPicker.setWrapSelectorWheel(true);
+//        spinAdapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_spinner_item, days);
+//        spinner.setAdapter(spinAdapter);
+
+        numberPicker.setValue(getArguments().getInt("item_days", 1));
+
     }
 
     // Used to fill screen

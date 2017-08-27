@@ -53,7 +53,8 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
 
     public void launchEditItemView(int pos) {
         FragmentManager fm = getSupportFragmentManager();
-        EditItemDialogFrament editItemDialogFrament = EditItemDialogFrament.newInstance(items.get(pos).toString(), pos);
+        TodoModel todo = queryDb(pos);
+        EditItemDialogFrament editItemDialogFrament = EditItemDialogFrament.newInstance(items.get(pos).toString(), pos, todo.days);
         editItemDialogFrament.show(fm, "fragment_edit_item");
     }
 
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
                     @Override
                     public boolean onItemLongClick(AdapterView<?> adapter,
                                                    View item, int pos, long id) {
-                        updateDb(items.get(pos).toString(), pos, 2);
+                        updateDb(items.get(pos).toString(), pos, 0, 2);
                         items.remove(pos);
                         itemsAdapter.notifyDataSetChanged();
                         return true;
@@ -83,14 +84,14 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
     }
 
     @Override
-    public void onFinishEditDialog(String inputText, int position) {
-        updateItem(inputText, position);
+    public void onFinishEditDialog(String todoText, int listPosition, int remindDays) {
+        updateItem(todoText, listPosition, remindDays);
     }
 
-    private void updateItem(String item, int pos) {
+    private void updateItem(String item, int pos, int days) {
         items.set(pos, item);
         itemsAdapter.notifyDataSetChanged();
-        updateDb(item, pos, 1);
+        updateDb(item, pos, days, 1);
     }
 
     public void onAddItem(View v)
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
         etNewItem.setText("");
 
         int indexOfLastItem = items.size()-1;
-        writeDb(items.get(indexOfLastItem).toString(), indexOfLastItem);
+        writeDb(items.get(indexOfLastItem).toString(), indexOfLastItem, 1);
     }
 
     private void readItems() {
@@ -119,25 +120,23 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
         }
     }
 
-    private void writeDb(String textBody, int listPos) {
+    private void writeDb(String textBody, int listPos, int days) {
         long timestamp;
         try {
             timestamp = System.currentTimeMillis() / 1000;
             SQLite.insert(TodoModel.class)
-                    .columns(TodoModel_Table.textBody, TodoModel_Table.listPos, TodoModel_Table.createdOn)
-                    .values(textBody, listPos, timestamp)
+                    .columns(TodoModel_Table.textBody, TodoModel_Table.listPos, TodoModel_Table.days, TodoModel_Table.createdOn, TodoModel_Table.modifiedOn)
+                    .values(textBody, listPos, days, timestamp, timestamp)
                     .execute();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void updateDb(String textBody, int listPos, int status) {
+    private void updateDb(String textBody, int listPos, int days, int status) {
+        long timeStamp;
         try {
-            TodoModel todo = SQLite.select()
-                    .from(TodoModel.class)
-                    .where(TodoModel_Table.listPos.eq(listPos))
-                    .querySingle();
+            TodoModel todo = queryDb(listPos);
 
             switch (status)
             {
@@ -146,7 +145,10 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
                     break;
                 case 1:
                 default:
+                    timeStamp = System.currentTimeMillis() / 1000;
                     todo.setTextBody(textBody);
+                    todo.setDays(days);
+                    todo.setModifiedOn(timeStamp);
                     todo.save();
                     break;
             }
@@ -154,5 +156,19 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private TodoModel queryDb(int listPos) {
+        TodoModel todo = null;
+        try {
+            todo = SQLite.select()
+                .from(TodoModel.class)
+                .where(TodoModel_Table.listPos.eq(listPos))
+                .querySingle();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return todo;
     }
 }

@@ -24,7 +24,13 @@ public class TodoModel extends BaseModel {
     String textBody;
 
     @Column
-    String createdOn;
+    long createdOn;
+
+    @Column
+    int days;
+
+    @Column
+    long modifiedOn;
 
     public void setListPos(int pos){
         this.listPos = pos;
@@ -32,5 +38,13 @@ public class TodoModel extends BaseModel {
 
     public void setTextBody(String text){
         this.textBody = text;
+    }
+
+    public void setDays(int days){
+        this.days = days;
+    }
+
+    public void setModifiedOn(long modifiedOn) {
+        this.modifiedOn = modifiedOn;
     }
 }
