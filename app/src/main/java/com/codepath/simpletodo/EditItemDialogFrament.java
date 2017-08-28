@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.codepath.simpletodo.R.id.lvItems;
-import static com.codepath.simpletodo.R.id.spinner;
 
 /**
  * Created by culgnol on 8/13/17.

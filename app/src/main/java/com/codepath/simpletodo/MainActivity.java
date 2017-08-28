@@ -15,19 +15,22 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import static android.R.attr.order;
 import static android.R.attr.text;
 import static com.raizlabs.android.dbflow.sql.language.property.PropertyFactory.from;
 
 public class MainActivity extends AppCompatActivity implements EditItemDialogFrament.EditNameDialogListener {
-    ArrayList<String> items;
-    ArrayAdapter<String> itemsAdapter;
+    ArrayList<TodoItem> items;
+    TodoItemsAdapter itemsAdapter;
     ListView lvItems;
     TodoModel todoModel;
 
@@ -38,14 +41,12 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
 
         //Create list of items and Display in ListView
         lvItems = (ListView)findViewById(R.id.lvItems);
-        items = new ArrayList<>();
-        readItems();
-        itemsAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, items);
-        lvItems.setAdapter(itemsAdapter);
-
+        items = new ArrayList<TodoItem>();
         //Create model
         todoModel = new TodoModel();
+        readItems();
+        itemsAdapter = new TodoItemsAdapter(this, items);
+        lvItems.setAdapter(itemsAdapter);
 
         setupListViewListener();
 
@@ -53,8 +54,9 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
 
     public void launchEditItemView(int pos) {
         FragmentManager fm = getSupportFragmentManager();
-        TodoModel todo = queryDb(pos);
-        EditItemDialogFrament editItemDialogFrament = EditItemDialogFrament.newInstance(items.get(pos).toString(), pos, todo.days);
+        TodoItem item = items.get(pos);
+        int days = (item.days > 0) ? item.days : 1; // if past due
+        EditItemDialogFrament editItemDialogFrament = EditItemDialogFrament.newInstance(item.textBody, pos, days);
         editItemDialogFrament.show(fm, "fragment_edit_item");
     }
 
@@ -89,7 +91,8 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
     }
 
     private void updateItem(String item, int pos, int days) {
-        items.set(pos, item);
+        TodoItem tItem = new TodoItem(item, days);
+        items.set(pos, tItem);
         itemsAdapter.notifyDataSetChanged();
         updateDb(item, pos, days, 1);
     }
@@ -98,11 +101,15 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
     {
         EditText etNewItem = (EditText) findViewById(R.id.etNewItem);
         String itemText = etNewItem.getText().toString();
-        itemsAdapter.add(itemText);
+        int daysDefault = 1;
+
+        TodoItem item = new TodoItem(itemText, daysDefault);
+
+        itemsAdapter.add(item);
         etNewItem.setText("");
 
         int indexOfLastItem = items.size()-1;
-        writeDb(items.get(indexOfLastItem).toString(), indexOfLastItem, 1);
+        writeDb(item.textBody, indexOfLastItem, item.days);
     }
 
     private void readItems() {
@@ -113,17 +120,23 @@ public class MainActivity extends AppCompatActivity implements EditItemDialogFra
                     .orderBy(TodoModel_Table.createdOn, true).queryList();
 
             for (TodoModel item: todoList) {
-                items.add(item.textBody);
+                Date modifiedDate = new Date(item.modifiedOn * 1000L);
+                Date currentDate = Calendar.getInstance().getTime();
+
+                long diff = currentDate.getTime() - modifiedDate.getTime();
+                int daysLeft = (int)TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+
+                items.add(new TodoItem(item.textBody, (item.days - daysLeft) ));
             }
         } catch (Exception e) {
-            items = new ArrayList<String>();
+            items = new ArrayList<TodoItem>();
         }
     }
 
     private void writeDb(String textBody, int listPos, int days) {
         long timestamp;
         try {
-            timestamp = System.currentTimeMillis() / 1000;
+            timestamp = System.currentTimeMillis() / 1000L;
             SQLite.insert(TodoModel.class)
                     .columns(TodoModel_Table.textBody, TodoModel_Table.listPos, TodoModel_Table.days, TodoModel_Table.createdOn, TodoModel_Table.modifiedOn)
                     .values(textBody, listPos, days, timestamp, timestamp)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/edit_item"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -26,37 +26,35 @@
         android:layout_alignStart="@+id/txtEditTitle"
         android:layout_below="@+id/txtEditTitle"
         android:layout_marginTop="15dp"
+        android:layout_marginBottom="50dp"
         android:ems="10"
         android:inputType="textMultiLine" />
 
     <TextView
         android:id="@+id/txtDateTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/etEditItem"
-        android:layout_alignStart="@+id/etEditItem"
+        android:layout_width="200dp"
+        android:layout_height="5dp"
+        android:layout_alignLeft="@+id/btnSave"
+        android:layout_alignStart="@+id/btnSave"
         android:layout_below="@+id/etEditItem"
-        android:layout_marginTop="44dp"
-        android:text="Remind me in:"
+        android:layout_alignTop="@+id/numberPicker"
+        android:layout_alignBottom="@+id/numberPicker"
+        android:layout_marginBottom="70dp"
+        android:layout_marginTop="70dp"
+        android:layout_centerVertical="true"
+        android:text="Remind me in (days):"
         android:textSize="18sp" />
 
     <NumberPicker
         android:id="@+id/numberPicker"
         android:layout_width="91dp"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="64dp"
-        android:layout_height="40dp"
-        android:layout_alignTop="@+id/spinner"
-        android:layout_marginLeft="23dp"
-        android:layout_marginStart="23dp"
-        android:layout_toEndOf="@+id/spinner"
-        android:layout_toRightOf="@+id/spinner"
-        android:text="Days"
-        android:textAlignment="viewStart"
-        android:textSize="24sp" />
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/txtDateTitle"
+        android:layout_below="@+id/etEditItem"
+        android:layout_marginRight="28dp"
+        android:paddingLeft="28dp"
+        android:layout_marginEnd="28dp" />
 
     <Button
         android:id="@+id/btnSave"
@@ -68,4 +66,4 @@
         android:layout_marginBottom="66dp"
         android:text="Save" />
 
-</LinearLayout>
+</RelativeLayout>
